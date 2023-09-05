@@ -14,11 +14,14 @@ import org.junit.jupiter.params.shadow.com.univocity.parsers.common.DataValidati
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 
 import com.flab.product.global.exception.ResourcesNotFoundException;
 import com.flab.product.product.controller.request.ProductCategoryRequest;
 import com.flab.product.product.controller.request.ProductRequest;
 import com.flab.product.product.controller.request.ProductUpdateRequest;
+import com.flab.product.product.domain.Product;
+import com.flab.product.product.domain.ProductCategory;
 import com.flab.product.product.repository.ProductRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +78,35 @@ public class ProductServiceTest {
 		assertThatNoException().isThrownBy(() -> productService.updateProduct(1, getProductUpdateRequest()));
 	}
 
+	@Test
+	@DisplayName("product 싱글 단위 조회 실패")
+	void failSelectProduct() {
+		given(productRepository.findByProductIdAndIsDeleted(any(), anyBoolean())).willThrow(
+			new ResourcesNotFoundException("not found"));
+		assertThatThrownBy(() -> productService.selectProduct(1))
+			.isInstanceOf(ResourcesNotFoundException.class);
+	}
+
+	@Test
+	@DisplayName("product 싱글 단위 조회 성공")
+	void successSelectProduct() {
+		given(productRepository.findByProductIdAndIsDeleted(any(), anyBoolean())).willReturn(
+			Optional.of(createProduct()));
+		assertThatNoException().isThrownBy(() -> productService.selectProduct(1));
+	}
+
+	@Test
+	@DisplayName("product 전체 조회 성공")
+	void successSelectProducts() {
+		assertThatNoException().isThrownBy(() -> productService.selectProducts(PageRequest.ofSize(10), ""));
+	}
+
+	@Test
+	@DisplayName("product 조건에 맞는 전체 개수 성공")
+	void successSelectProductsCount() {
+		assertThatNoException().isThrownBy(() -> productService.selectCount(""));
+	}
+
 	private ProductRequest getProductRequest() {
 		return new ProductRequest("name", 10, "description", "mainUrl", "subUrl", 1,
 			LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2),
@@ -84,5 +116,22 @@ public class ProductServiceTest {
 	private ProductUpdateRequest getProductUpdateRequest() {
 		return new ProductUpdateRequest("name", 10, "description", "mainUrl", "subUrl", 1,
 			LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2));
+	}
+
+	private Product createProduct() {
+		ProductCategory category = ProductCategory.builder().name("unique").build();
+		Product product = Product.builder()
+			.count(10)
+			.description("description")
+			.price(1000)
+			.auctionStartDate(LocalDateTime.now())
+			.auctionEndDate(LocalDateTime.now())
+			.name("name")
+			.mainImageUrl("mainUrl")
+			.subImageUrl("subUrl")
+			.isDeleted(false)
+			.build();
+		product.initCategory(List.of(category));
+		return product;
 	}
 }

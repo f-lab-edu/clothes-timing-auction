@@ -1,6 +1,6 @@
 package com.flab.product.product.controller;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
@@ -26,6 +26,9 @@ import com.flab.product.global.exception.ResourcesNotFoundException;
 import com.flab.product.product.controller.request.ProductCategoryRequest;
 import com.flab.product.product.controller.request.ProductRequest;
 import com.flab.product.product.controller.request.ProductUpdateRequest;
+import com.flab.product.product.domain.Product;
+import com.flab.product.product.domain.ProductCategories;
+import com.flab.product.product.domain.ProductCategory;
 import com.flab.product.product.service.ProductService;
 
 @WebMvcTest
@@ -166,6 +169,38 @@ public class ProductControllerTest {
 			.andDo(print());
 	}
 
+	@Test
+	@DisplayName("product 단위 조회 실패")
+	void failedSelectProduct() throws Exception {
+		doThrow(ResourcesNotFoundException.class).when(productService).selectProduct(1);
+		mockMvc.perform(get(url + "/{productId}", 1)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(MockMvcResultMatchers.status().isNotFound())
+			.andDo(print());
+	}
+
+	@Test
+	@DisplayName("product 단위 조회 성공")
+	void successSelectProduct() throws Exception {
+		given(productService.selectProduct(1)).willReturn(createProduct());
+		mockMvc.perform(get(url + "/{productId}", 1)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andDo(print());
+	}
+
+	@Test
+	@DisplayName("product 전체 조회")
+	void successSelectProducts() throws Exception {
+		mockMvc.perform(get(url)
+				.param("page", "0")
+				.param("size", "10")
+				.param("keyword", "")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andDo(print());
+	}
+
 	private String createRequest() throws JsonProcessingException {
 		ProductRequest productRequest = getProductRequest();
 		return objectMapper.writeValueAsString(productRequest);
@@ -184,6 +219,22 @@ public class ProductControllerTest {
 	private ProductUpdateRequest getProductUpdateRequest() {
 		return new ProductUpdateRequest("name", 10, "description", "mainUrl", "subUrl", 1,
 			LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2));
+	}
+
+	private Product createProduct() {
+		return Product.builder()
+			.productId(1)
+			.count(1)
+			.subImageUrl("sub")
+			.mainImageUrl("main")
+			.auctionStartDate(LocalDateTime.now().plusHours(1))
+			.auctionEndDate(LocalDateTime.now().plusHours(1))
+			.name("test")
+			.description("test")
+			.isDeleted(false)
+			.productCategories(new ProductCategories(List.of(new ProductCategory(1, "test"))))
+			.price(10)
+			.build();
 	}
 
 }

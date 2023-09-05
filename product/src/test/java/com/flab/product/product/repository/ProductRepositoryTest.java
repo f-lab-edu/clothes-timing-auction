@@ -14,12 +14,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
 
+import com.flab.product.TestConfig;
 import com.flab.product.product.domain.Product;
 import com.flab.product.product.domain.ProductCategory;
 
 @DataJpaTest
+@Import(TestConfig.class)
 public class ProductRepositoryTest {
 
 	@Autowired
@@ -105,9 +109,83 @@ public class ProductRepositoryTest {
 		assertThat(updateProduct.getCategories()).hasSize(1);
 	}
 
+	@Test
+	@DisplayName("Product 개인 조회")
+	void selectProduct() {
+		LocalDateTime auctionStartDate = LocalDateTime.now();
+		LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(10);
+		Product product = createProduct("productName", auctionStartDate, auctionEndDate, "description");
+
+		Product db = productRepository.save(product);
+
+		Product exist = productRepository.findByProductIdAndIsDeleted(db.getProductId(), false).orElseThrow();
+
+		assertEquals(db.getProductId(), exist.getProductId());
+	}
+
+	@Test
+	@DisplayName("Product 전체 개수")
+	void selectProductsCount() {
+		LocalDateTime auctionStartDate = LocalDateTime.now();
+		LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(10);
+		Product product = createProduct("productName", auctionStartDate, auctionEndDate, "description");
+		Product other = createProduct("other", auctionStartDate, auctionEndDate, "description");
+
+		productRepository.save(product);
+		productRepository.save(other);
+
+		int result = productRepository.countProducts("");
+		assertThat(result).isEqualTo(2);
+	}
+
+	@Test
+	@DisplayName("Product 전체 조회")
+	void selectProducts() {
+		LocalDateTime auctionStartDate = LocalDateTime.now();
+		LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(10);
+		Product product = createProduct("productName", auctionStartDate, auctionEndDate, "description");
+		Product other = createProduct("other", auctionStartDate, auctionEndDate, "description");
+
+		productRepository.save(product);
+		productRepository.save(other);
+
+		List<Product> result = productRepository.selectProducts(PageRequest.ofSize(10), "");
+		assertThat(result).hasSize(2);
+	}
+
+	@Test
+	@DisplayName("Product 검색 조회")
+	void selectProductsFromName() {
+		LocalDateTime auctionStartDate = LocalDateTime.now();
+		LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(10);
+		Product product = createProduct("productName", auctionStartDate, auctionEndDate, "description");
+		Product other = createProduct("other", auctionStartDate, auctionEndDate, "description");
+
+		productRepository.save(product);
+		productRepository.save(other);
+
+		List<Product> result = productRepository.selectProducts(PageRequest.ofSize(10), "other");
+		assertThat(result).hasSize(1);
+	}
+
+	@Test
+	@DisplayName("Product 검색 결과 없음")
+	void selectProductsFromNameHasNotValue() {
+		LocalDateTime auctionStartDate = LocalDateTime.now();
+		LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(10);
+		Product product = createProduct("productName", auctionStartDate, auctionEndDate, "description");
+		Product other = createProduct("other", auctionStartDate, auctionEndDate, "description");
+
+		productRepository.save(product);
+		productRepository.save(other);
+
+		List<Product> result = productRepository.selectProducts(PageRequest.ofSize(10), "notValue");
+		assertThat(result).hasSize(0);
+	}
+
 	private Product createProduct(String name, LocalDateTime auctionStartDate, LocalDateTime auctionEndDate,
 		String description) {
-		ProductCategory category = ProductCategory.builder().name("unique").build();
+		ProductCategory category = ProductCategory.builder().name(name).build();
 		Product product = Product.builder()
 			.count(10)
 			.description(description)
