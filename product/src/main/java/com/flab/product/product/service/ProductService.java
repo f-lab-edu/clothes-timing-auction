@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.flab.product.global.exception.ResourcesNotFoundException;
-import com.flab.product.product.controller.request.ProductRequest;
+import com.flab.product.product.controller.request.ProductSaveRequest;
 import com.flab.product.product.controller.request.ProductUpdateRequest;
 import com.flab.product.product.domain.Product;
 import com.flab.product.product.domain.ProductCategory;
@@ -22,7 +22,7 @@ public class ProductService {
 	private final ProductRepository productRepository;
 
 	@Transactional
-	public void createProduct(ProductRequest request) {
+	public void createProduct(ProductSaveRequest request) {
 		Product product = request.ofProduct();
 		List<ProductCategory> categories = request.ofProductCategory();
 		product.initCategory(categories);
@@ -55,7 +55,7 @@ public class ProductService {
 		return productRepository.selectProducts(pageable, keyword);
 	}
 
-	public int selectCount(String keyword) {
+	public int selectProductsCount(String keyword) {
 		return productRepository.countProducts(keyword);
 	}
 }

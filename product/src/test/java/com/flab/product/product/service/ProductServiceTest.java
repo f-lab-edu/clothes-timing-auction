@@ -18,7 +18,7 @@ import org.springframework.data.domain.PageRequest;
 
 import com.flab.product.global.exception.ResourcesNotFoundException;
 import com.flab.product.product.controller.request.ProductCategoryRequest;
-import com.flab.product.product.controller.request.ProductRequest;
+import com.flab.product.product.controller.request.ProductSaveRequest;
 import com.flab.product.product.controller.request.ProductUpdateRequest;
 import com.flab.product.product.domain.Product;
 import com.flab.product.product.domain.ProductCategory;
@@ -43,7 +43,7 @@ public class ProductServiceTest {
 	@DisplayName("product 저장 실패")
 	void failedSaveProduct() {
 		given(productRepository.save(any())).willThrow(new DataValidationException("data exception"));
-		ProductRequest request = getProductRequest();
+		ProductSaveRequest request = getProductRequest();
 		assertThatThrownBy(() -> productService.createProduct(getProductRequest()))
 			.isInstanceOf(DataValidationException.class);
 	}
@@ -104,11 +104,11 @@ public class ProductServiceTest {
 	@Test
 	@DisplayName("product 조건에 맞는 전체 개수 성공")
 	void successSelectProductsCount() {
-		assertThatNoException().isThrownBy(() -> productService.selectCount(""));
+		assertThatNoException().isThrownBy(() -> productService.selectProductsCount(""));
 	}
 
-	private ProductRequest getProductRequest() {
-		return new ProductRequest("name", 10, "description", "mainUrl", "subUrl", 1,
+	private ProductSaveRequest getProductRequest() {
+		return new ProductSaveRequest("name", 10, "description", "mainUrl", "subUrl", 1,
 			LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2),
 			List.of(new ProductCategoryRequest("category")));
 	}

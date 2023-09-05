@@ -29,7 +29,6 @@ public class ProductRepositoryImpl implements ProductQueryDslRepository {
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
-
 	}
 
 	@Override

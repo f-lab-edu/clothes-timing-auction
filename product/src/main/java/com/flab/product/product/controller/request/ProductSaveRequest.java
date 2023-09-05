@@ -15,7 +15,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ProductRequest {
+public class ProductSaveRequest {
 
 	@NotEmpty(message = "삼품명을 입력해주세요")
 	private String name;

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.flab.product.product.controller.request.ProductRequest;
+import com.flab.product.product.controller.request.ProductSaveRequest;
 import com.flab.product.product.controller.request.ProductUpdateRequest;
 import com.flab.product.product.controller.response.ProductResponse;
 import com.flab.product.product.domain.Product;
@@ -33,7 +33,7 @@ public class ProductController {
 	private final ProductService productService;
 
 	@PostMapping("/products")
-	public ResponseEntity<Void> createProduct(@RequestBody @Valid ProductRequest request) {
+	public ResponseEntity<Void> createProduct(@RequestBody @Valid ProductSaveRequest request) {
 		productService.createProduct(request);
 		return ResponseEntity.ok().build();
 	}
@@ -53,7 +53,7 @@ public class ProductController {
 
 	@GetMapping("/products")
 	public ResponseEntity<PageImpl<ProductResponse>> selectProduct(Pageable pageable, @RequestParam String keyword) {
-		int count = productService.selectCount(keyword);
+		int count = productService.selectProductsCount(keyword);
 		List<Product> result = productService.selectProducts(pageable, keyword);
 		PageImpl<ProductResponse> response = new PageImpl<>(createResponse(result), pageable, count);
 		return ResponseEntity.ok().body(response);
