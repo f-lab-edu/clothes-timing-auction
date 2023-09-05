@@ -105,4 +105,15 @@ public class Product extends BaseTime {
 	public void delete() {
 		this.isDeleted = true;
 	}
+
+	public void update(Product changeProduct) {
+		this.name = changeProduct.getName();
+		this.count = changeProduct.getCount();
+		this.description = changeProduct.getDescription();
+		this.mainImageUrl = changeProduct.mainImageUrl;
+		this.subImageUrl = changeProduct.getSubImageUrl();
+		this.price = changeProduct.getPrice();
+		this.auctionStartDate = changeProduct.getAuctionStartDate();
+		this.auctionEndDate = changeProduct.getAuctionEndDate();
+	}
 }

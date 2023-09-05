@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.product.global.exception.ResourcesNotFoundException;
 import com.flab.product.product.controller.request.ProductCategoryRequest;
 import com.flab.product.product.controller.request.ProductRequest;
+import com.flab.product.product.controller.request.ProductUpdateRequest;
 import com.flab.product.product.service.ProductService;
 
 @WebMvcTest
@@ -43,6 +44,13 @@ public class ProductControllerTest {
 		LocalDateTime auctionStartDate, LocalDateTime auctionEndDate, List<ProductCategoryRequest> categoryRequests) {
 		return new ProductRequest(name, count, description, "mainUrl", "subUrl", price,
 			auctionStartDate, auctionEndDate, categoryRequests);
+	}
+
+	private static ProductUpdateRequest getProductUpdateRequestNotValid(String name, int count, String description,
+		int price,
+		LocalDateTime auctionStartDate, LocalDateTime auctionEndDate) {
+		return new ProductUpdateRequest(name, count, description, "mainUrl", "subUrl", price,
+			auctionStartDate, auctionEndDate);
 	}
 
 	static Stream<Arguments> getNotValid() {
@@ -64,6 +72,26 @@ public class ProductControllerTest {
 				LocalDateTime.now().minusDays(10), List.of(new ProductCategoryRequest("name")))),
 			Arguments.arguments(getProductRequestNotValid("name", 1, "description", 1, LocalDateTime.now().plusDays(10),
 				LocalDateTime.now().plusDays(10), null)));
+	}
+
+	static Stream<Arguments> getNotValidPut() {
+		return Stream.of(
+			Arguments.arguments(
+				getProductUpdateRequestNotValid(null, 1, "description", 1, LocalDateTime.now().plusDays(10),
+					LocalDateTime.now().plusDays(10))),
+			Arguments.arguments(
+				getProductUpdateRequestNotValid("name", -1, "description", 1, LocalDateTime.now().plusDays(10),
+					LocalDateTime.now().plusDays(10))),
+			Arguments.arguments(getProductUpdateRequestNotValid("name", 1, null, 1, LocalDateTime.now().plusDays(10),
+				LocalDateTime.now().plusDays(10))),
+			Arguments.arguments(
+				getProductUpdateRequestNotValid("name", 1, "description", -1, LocalDateTime.now().plusDays(10),
+					LocalDateTime.now().plusDays(10))),
+			Arguments.arguments(
+				getProductUpdateRequestNotValid("name", 1, "description", 1, null, LocalDateTime.now().plusDays(10))),
+			Arguments.arguments(
+				getProductUpdateRequestNotValid("name", 1, "description", 1, LocalDateTime.now().plusDays(10),
+					LocalDateTime.now().minusDays(10))));
 	}
 
 	@Test
@@ -106,19 +134,56 @@ public class ProductControllerTest {
 			.andDo(print());
 	}
 
+	@Test
+	@DisplayName("product 수정")
+	void successPut() throws Exception {
+		mockMvc.perform(put(url + "/{productId}", 1)
+				.content(createRequest(getProductUpdateRequest()))
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andDo(print());
+	}
+
+	@Test
+	@DisplayName("product 수정 실패")
+	void failedPut() throws Exception {
+		doThrow(ResourcesNotFoundException.class).when(productService).updateProduct(anyInt(), any());
+		mockMvc.perform(put(url + "/{productId}", 1)
+				.content(createRequest(getProductUpdateRequest()))
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(MockMvcResultMatchers.status().isNotFound())
+			.andDo(print());
+	}
+
+	@ParameterizedTest
+	@MethodSource("getNotValidPut")
+	@DisplayName("product 수정 body validationCheck")
+	void failedPutNotValid(ProductUpdateRequest notValid) throws Exception {
+		mockMvc.perform(put(url + "/{productId}", 1)
+				.content(createRequest(notValid))
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
+			.andDo(print());
+	}
+
 	private String createRequest() throws JsonProcessingException {
 		ProductRequest productRequest = getProductRequest();
 		return objectMapper.writeValueAsString(productRequest);
 	}
 
-	private String createRequest(ProductRequest productRequest) throws JsonProcessingException {
-		return objectMapper.writeValueAsString(productRequest);
+	private <T> String createRequest(T request) throws JsonProcessingException {
+		return objectMapper.writeValueAsString(request);
 	}
 
 	private ProductRequest getProductRequest() {
 		return new ProductRequest("name", 10, "description", "mainUrl", "subUrl", 1,
 			LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2),
 			List.of(new ProductCategoryRequest("category")));
+	}
+
+	private ProductUpdateRequest getProductUpdateRequest() {
+		return new ProductUpdateRequest("name", 10, "description", "mainUrl", "subUrl", 1,
+			LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2));
 	}
 
 }

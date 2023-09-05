@@ -86,7 +86,23 @@ public class ProductRepositoryTest {
 		Product deleteProduct = productRepository.findById(db.getProductId()).orElseThrow();
 
 		assertThat(deleteProduct.isDeleted()).isTrue();
+	}
 
+	@Test
+	@DisplayName("Product 수정")
+	void updateProduct() {
+		LocalDateTime auctionStartDate = LocalDateTime.now();
+		LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(10);
+		Product product = createProduct("productName", auctionStartDate, auctionEndDate, "description");
+		Product changeProduct = createProduct("change", auctionStartDate, auctionEndDate, "change");
+
+		Product db = productRepository.save(product);
+		db.update(changeProduct);
+
+		Product updateProduct = productRepository.findById(db.getProductId()).orElseThrow();
+
+		assertEquals(updateProduct.getName(), db.getName());
+		assertThat(updateProduct.getCategories()).hasSize(1);
 	}
 
 	private Product createProduct(String name, LocalDateTime auctionStartDate, LocalDateTime auctionEndDate,

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.flab.product.global.exception.ResourcesNotFoundException;
 import com.flab.product.product.controller.request.ProductRequest;
+import com.flab.product.product.controller.request.ProductUpdateRequest;
 import com.flab.product.product.domain.Product;
 import com.flab.product.product.domain.ProductCategory;
 import com.flab.product.product.repository.ProductRepository;
@@ -33,5 +34,14 @@ public class ProductService {
 			.orElseThrow(() -> new ResourcesNotFoundException("Product" + productId + "Not Found"));
 
 		existProduct.delete();
+	}
+
+	@Transactional
+	public void updateProduct(int productId, ProductUpdateRequest updateRequest) {
+		Product existProduct = productRepository.findById(productId)
+			.orElseThrow(() -> new ResourcesNotFoundException("Product" + productId + "Not Found"));
+
+		existProduct.update(updateRequest.ofProduct());
+
 	}
 }

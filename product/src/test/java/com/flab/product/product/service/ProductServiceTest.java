@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.flab.product.global.exception.ResourcesNotFoundException;
 import com.flab.product.product.controller.request.ProductCategoryRequest;
 import com.flab.product.product.controller.request.ProductRequest;
+import com.flab.product.product.controller.request.ProductUpdateRequest;
 import com.flab.product.product.repository.ProductRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,9 +60,29 @@ public class ProductServiceTest {
 		assertThatNoException().isThrownBy(() -> productService.deleteProduct(1));
 	}
 
+	@Test
+	@DisplayName("product 수정 실패")
+	void failedUpdateProduct() {
+		given(productRepository.findById(any())).willThrow(new ResourcesNotFoundException("not found"));
+		assertThatThrownBy(() -> productService.updateProduct(1, getProductUpdateRequest()))
+			.isInstanceOf(ResourcesNotFoundException.class);
+	}
+
+	@Test
+	@DisplayName("product 수정 성공")
+	void successUpdateProduct() {
+		given(productRepository.findById(any())).willReturn(Optional.of(getProductUpdateRequest().ofProduct()));
+		assertThatNoException().isThrownBy(() -> productService.updateProduct(1, getProductUpdateRequest()));
+	}
+
 	private ProductRequest getProductRequest() {
 		return new ProductRequest("name", 10, "description", "mainUrl", "subUrl", 1,
 			LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2),
 			List.of(new ProductCategoryRequest("category")));
+	}
+
+	private ProductUpdateRequest getProductUpdateRequest() {
+		return new ProductUpdateRequest("name", 10, "description", "mainUrl", "subUrl", 1,
+			LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2));
 	}
 }
