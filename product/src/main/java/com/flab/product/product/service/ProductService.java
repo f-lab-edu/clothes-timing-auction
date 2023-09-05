@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.flab.product.global.exception.ResourcesNotFoundException;
 import com.flab.product.product.controller.request.ProductRequest;
 import com.flab.product.product.domain.Product;
 import com.flab.product.product.domain.ProductCategory;
@@ -24,5 +25,13 @@ public class ProductService {
 		List<ProductCategory> categories = request.ofProductCategory();
 		product.initCategory(categories);
 		productRepository.save(product);
+	}
+
+	@Transactional
+	public void deleteProduct(int productId) {
+		Product existProduct = productRepository.findById(productId)
+			.orElseThrow(() -> new ResourcesNotFoundException("Product" + productId + "Not Found"));
+
+		existProduct.delete();
 	}
 }

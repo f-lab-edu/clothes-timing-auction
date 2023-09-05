@@ -1,5 +1,6 @@
 package com.flab.product.product.controller;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
@@ -21,13 +22,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flab.product.global.exception.ResourcesNotFoundException;
 import com.flab.product.product.controller.request.ProductCategoryRequest;
 import com.flab.product.product.controller.request.ProductRequest;
 import com.flab.product.product.service.ProductService;
 
 @WebMvcTest
 public class ProductControllerTest {
-	private static final String url = "/v1/product";
+	private static final String url = "/v1/products";
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -82,6 +84,25 @@ public class ProductControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(createRequest(notValid)))
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
+			.andDo(print());
+	}
+
+	@Test
+	@DisplayName("product 삭제")
+	void successDelete() throws Exception {
+		mockMvc.perform(delete(url + "/{productId}", 1)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(MockMvcResultMatchers.status().isNoContent())
+			.andDo(print());
+	}
+
+	@Test
+	@DisplayName("product 삭제 실패")
+	void failedDelete() throws Exception {
+		doThrow(ResourcesNotFoundException.class).when(productService).deleteProduct(1);
+		mockMvc.perform(delete(url + "/{productId}", 1)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(MockMvcResultMatchers.status().isNotFound())
 			.andDo(print());
 	}
 

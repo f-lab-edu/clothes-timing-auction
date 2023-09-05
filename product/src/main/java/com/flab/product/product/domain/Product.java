@@ -101,4 +101,8 @@ public class Product extends BaseTime {
 	public List<ProductCategory> getCategories() {
 		return productCategories.getCategories();
 	}
+
+	public void delete() {
+		this.isDeleted = true;
+	}
 }

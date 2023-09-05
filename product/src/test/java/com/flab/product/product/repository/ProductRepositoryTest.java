@@ -70,6 +70,22 @@ public class ProductRepositoryTest {
 		String description) {
 		Product product = createProduct(name, auctionStartDate, auctionEndDate, description);
 		assertThatThrownBy(() -> productRepository.save(product)).isInstanceOf(DataIntegrityViolationException.class);
+	}
+
+	@Test
+	@DisplayName("Product 삭제")
+	void deleteProduct() {
+		LocalDateTime auctionStartDate = LocalDateTime.now();
+		LocalDateTime auctionEndDate = LocalDateTime.now().plusDays(10);
+		Product product = createProduct("productName", auctionStartDate, auctionEndDate, "description");
+
+		Product db = productRepository.save(product);
+
+		db.delete();
+
+		Product deleteProduct = productRepository.findById(db.getProductId()).orElseThrow();
+
+		assertThat(deleteProduct.isDeleted()).isTrue();
 
 	}
 
