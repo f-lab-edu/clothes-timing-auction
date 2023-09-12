@@ -21,8 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "product", indexes = {@Index(name = "idx_is_deleted", columnList = "is_deleted"),
-	@Index(name = "idx_price", columnList = "price")})
+@Table(name = "product", indexes = {@Index(name = "idx_is_deleted", columnList = "is_deleted")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
