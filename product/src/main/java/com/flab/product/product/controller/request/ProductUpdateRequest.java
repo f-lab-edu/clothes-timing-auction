@@ -27,12 +27,6 @@ public class ProductUpdateRequest {
 	private String mainImageUrl;
 
 	private String subImageUrl;
-	@Min(value = 1, message = "최소 개수는 1입니다.")
-	private Integer price;
-
-	@NotNull(message = "경매 시작시간이 올바르지 않습니다.")
-	@Future
-	private LocalDateTime auctionStartDate;
 
 	@Future
 
@@ -46,7 +40,6 @@ public class ProductUpdateRequest {
 			.description(this.description)
 			.mainImageUrl(this.mainImageUrl)
 			.subImageUrl(this.subImageUrl)
-			.price(this.price)
 			.build();
 	}
 }

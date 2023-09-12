@@ -39,7 +39,6 @@ public class ProductResponse {
 			.description(product.getDescription())
 			.mainImageUrl(product.getMainImageUrl())
 			.subImageUrl(product.getSubImageUrl())
-			.price(product.getPrice())
 			.productCategories(product.getCategories())
 			.build();
 	}

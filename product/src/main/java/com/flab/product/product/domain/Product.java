@@ -53,10 +53,6 @@ public class Product extends BaseTime {
 	@Comment("상품 서브 이미지")
 	private String subImageUrl;
 
-	@Column(name = "price")
-	@Comment("상품 가격")
-	private Integer price;
-
 	@Column(name = "is_deleted")
 	@Comment("상품 삭제 여부")
 	private boolean isDeleted;
@@ -100,6 +96,5 @@ public class Product extends BaseTime {
 		this.description = changeProduct.getDescription();
 		this.mainImageUrl = changeProduct.mainImageUrl;
 		this.subImageUrl = changeProduct.getSubImageUrl();
-		this.price = changeProduct.getPrice();
 	}
 }
