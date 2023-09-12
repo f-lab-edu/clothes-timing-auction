@@ -203,8 +203,6 @@ public class ProductControllerTest {
 			.count(1)
 			.subImageUrl("sub")
 			.mainImageUrl("main")
-			.auctionStartDate(LocalDateTime.now().plusHours(1))
-			.auctionEndDate(LocalDateTime.now().plusHours(1))
 			.name("test")
 			.description("test")
 			.isDeleted(false)

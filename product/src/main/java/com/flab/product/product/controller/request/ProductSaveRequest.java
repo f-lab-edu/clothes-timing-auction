@@ -52,8 +52,6 @@ public class ProductSaveRequest {
 			.mainImageUrl(this.mainImageUrl)
 			.subImageUrl(this.subImageUrl)
 			.price(this.price)
-			.auctionStartDate(this.auctionStartDate)
-			.auctionEndDate(this.auctionEndDate)
 			.build();
 	}
 

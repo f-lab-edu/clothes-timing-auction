@@ -1,11 +1,9 @@
 package com.flab.product.product.domain;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 import org.hibernate.annotations.Comment;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.flab.product.global.audit.BaseTime;
 
@@ -63,16 +61,6 @@ public class Product extends BaseTime {
 	@Comment("상품 삭제 여부")
 	private boolean isDeleted;
 
-	@Column(name = "auction_start_date", nullable = false)
-	@Comment("경매 시작 시간")
-	@DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-	private LocalDateTime auctionStartDate;
-
-	@Column(name = "auction_end_date", nullable = false)
-	@Comment("경매 종료 시간")
-	@DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-	private LocalDateTime auctionEndDate;
-
 	@Embedded
 	private ProductCategories productCategories;
 
@@ -113,7 +101,5 @@ public class Product extends BaseTime {
 		this.mainImageUrl = changeProduct.mainImageUrl;
 		this.subImageUrl = changeProduct.getSubImageUrl();
 		this.price = changeProduct.getPrice();
-		this.auctionStartDate = changeProduct.getAuctionStartDate();
-		this.auctionEndDate = changeProduct.getAuctionEndDate();
 	}
 }

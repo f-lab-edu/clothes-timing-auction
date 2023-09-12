@@ -40,8 +40,6 @@ public class ProductResponse {
 			.mainImageUrl(product.getMainImageUrl())
 			.subImageUrl(product.getSubImageUrl())
 			.price(product.getPrice())
-			.auctionStartDate(product.getAuctionStartDate())
-			.auctionEndDate(product.getAuctionEndDate())
 			.productCategories(product.getCategories())
 			.build();
 	}

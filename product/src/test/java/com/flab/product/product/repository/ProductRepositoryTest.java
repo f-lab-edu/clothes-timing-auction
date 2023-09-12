@@ -190,8 +190,6 @@ public class ProductRepositoryTest {
 			.count(10)
 			.description(description)
 			.price(1000)
-			.auctionStartDate(auctionStartDate)
-			.auctionEndDate(auctionEndDate)
 			.name(name)
 			.mainImageUrl("mainUrl")
 			.subImageUrl("subUrl")
