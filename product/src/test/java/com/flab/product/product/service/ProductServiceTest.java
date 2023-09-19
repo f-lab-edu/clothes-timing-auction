@@ -124,8 +124,6 @@ public class ProductServiceTest {
 			.count(10)
 			.description("description")
 			.price(1000)
-			.auctionStartDate(LocalDateTime.now())
-			.auctionEndDate(LocalDateTime.now())
 			.name("name")
 			.mainImageUrl("mainUrl")
 			.subImageUrl("subUrl")

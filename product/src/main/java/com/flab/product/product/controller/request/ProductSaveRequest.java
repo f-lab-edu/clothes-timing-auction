@@ -29,13 +29,6 @@ public class ProductSaveRequest {
 	private String mainImageUrl;
 
 	private String subImageUrl;
-	@Min(value = 1, message = "최소 개수는 1입니다.")
-	private Integer price;
-
-	@NotNull(message = "경매 시작시간이 올바르지 않습니다.")
-	@Future
-	private LocalDateTime auctionStartDate;
-
 	@Future
 
 	@NotNull(message = "경매 종료시간이 올바르지 않습니다.")
@@ -51,9 +44,6 @@ public class ProductSaveRequest {
 			.description(this.description)
 			.mainImageUrl(this.mainImageUrl)
 			.subImageUrl(this.subImageUrl)
-			.price(this.price)
-			.auctionStartDate(this.auctionStartDate)
-			.auctionEndDate(this.auctionEndDate)
 			.build();
 	}
 
